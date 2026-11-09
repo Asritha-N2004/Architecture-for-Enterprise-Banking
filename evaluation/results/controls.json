@@ -1,0 +1,9 @@
+{
+  "label": "local control test suite, not E1\u2013E6 comparison",
+  "elapsed_seconds": 39.66752750001615,
+  "exit_code": 0,
+  "tests": 27,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

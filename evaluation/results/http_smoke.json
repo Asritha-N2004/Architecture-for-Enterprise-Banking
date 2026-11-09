@@ -1,0 +1,5 @@
+{
+  "backend_database_health": "HTTP 200",
+  "frontend_preview": "HTTP 200",
+  "browser_interaction_verified": false
+}

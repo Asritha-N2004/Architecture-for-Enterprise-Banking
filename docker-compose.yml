@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: banking
+      POSTGRES_DB: banking
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banking -d banking"]
+      interval: 5s
+      retries: 10
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment: &backend_environment
+      DATABASE_URL: postgresql+psycopg://banking:${POSTGRES_PASSWORD}@postgres/banking
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      SIMULATION_ONLY: "true"
+    command: ["alembic", "-c", "backend/alembic.ini", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment: *backend_environment
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/database')"]
+      interval: 10s
+      retries: 5
+    ports: ["127.0.0.1:8000:8000"]
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      backend:
+        condition: service_healthy
+  redis:
+    image: redis:7-alpine
+    profiles: ["optional-cache"]
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    # Not consumed by the application yet. No port is published.
+volumes:
+  postgres_data:

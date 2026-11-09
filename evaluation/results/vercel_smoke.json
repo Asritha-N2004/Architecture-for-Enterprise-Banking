@@ -1,0 +1,12 @@
+{
+  "url": "https://aegis-secure-mcp-banking.vercel.app",
+  "frontend_assets": "passed",
+  "database_health": "ok",
+  "registration_and_authentication": "passed",
+  "sample_provisioning_and_idempotency": "passed",
+  "real_mcp_balance_inquiry": "passed",
+  "workflow_id": "4c5185e5-3865-488d-9117-2bc363c4e30c",
+  "synthetic_balance": "50000.00",
+  "currency": "INR",
+  "session_revocation": "passed"
+}
